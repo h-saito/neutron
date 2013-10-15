@@ -31,13 +31,6 @@ from quantum.common import utils
 from quantum.openstack.common import log as logging
 from quantum import wsgi
 
-proxy_socket = cfg.StrOpt('metadata_proxy_socket',
-                          default='$state_path/metadata_proxy',
-                          help=_('Location of Metadata Proxy UNIX domain '
-                                 'socket'))
-
-cfg.CONF.register_opt(proxy_socket)
-
 LOG = logging.getLogger(__name__)
 
 
@@ -157,6 +150,10 @@ def main():
                    default=9697,
                    help=_("TCP Port to listen for metadata server "
                           "requests.")),
+        cfg.StrOpt('metadata_proxy_socket',
+                   default='$state_path/metadata_proxy',
+                   help=_('Location of Metadata Proxy UNIX domain '
+                          'socket')),
     ]
 
     cfg.CONF.register_cli_opts(opts)
