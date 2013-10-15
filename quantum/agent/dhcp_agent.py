@@ -17,6 +17,7 @@
 
 import os
 import socket
+import sys
 import uuid
 
 import eventlet
@@ -66,6 +67,10 @@ class DhcpAgent(manager.Manager):
                     help=_("Allows for serving metadata requests from a "
                            "dedicated network. Requires "
                            "enable_isolated_metadata = True")),
+        cfg.StrOpt('metadata_proxy_socket',
+                   default='$state_path/metadata_proxy',
+                   help=_('Location of Metadata Proxy UNIX domain '
+                          'socket')),
     ]
 
     def __init__(self, host=None):
@@ -316,8 +321,10 @@ class DhcpAgent(manager.Manager):
                                         router_ports[0].device_id)
 
         def callback(pid_file):
-            proxy_cmd = ['quantum-ns-metadata-proxy',
+            proxy_cmd = [os.path.join(os.path.dirname(sys.argv[0]),
+                             'quantum-ns-metadata-proxy'),
                          '--pid_file=%s' % pid_file,
+                         '--metadata_proxy_socket=%s' % cfg.CONF.metadata_proxy_socket,
                          quantum_lookup_param,
                          '--state_path=%s' % self.conf.state_path,
                          '--metadata_port=%d' % METADATA_PORT]
